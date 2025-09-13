@@ -22,6 +22,17 @@ pipeline {
                 }
             }
         }
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
+                        def image = docker.build("xebeto/app1:${env.BUILD_NUMBER}")
+                        image.push()
+                        image.push('latest')
+                    }
+                }
+            }
+        }
         stage('Deliver') { 
             steps {
                 sh './jenkins/scripts/deliver.sh' 
