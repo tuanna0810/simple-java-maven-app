@@ -1,9 +1,7 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.8.1-openjdk-11'
-            args '-v /var/run/docker.sock:/var/run/docker.sock --group-add docker'
-        }
+    agent any
+    tools {
+        maven 'Maven'
     }
     options {
         skipStagesAfterUnstable()
