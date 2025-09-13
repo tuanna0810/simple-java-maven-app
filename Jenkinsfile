@@ -1,8 +1,5 @@
 pipeline {
-    agent any
-    tools {
-        maven 'Maven'
-    }
+    agent { docker { image 'maven:3.9.8-eclipse-temurin-17' } }
     options {
         skipStagesAfterUnstable()
     }
