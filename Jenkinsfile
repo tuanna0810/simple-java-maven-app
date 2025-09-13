@@ -1,7 +1,9 @@
 pipeline {
-    agent any
-    tools {
-        maven 'Maven'
+    agent {
+        docker {
+            image 'maven:3.8.1-openjdk-11'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker'
+        }
     }
     options {
         skipStagesAfterUnstable()
@@ -30,6 +32,9 @@ pipeline {
             }
         }
         stage('Docker Build & Push') {
+            agent {
+                label 'docker'
+            }
             steps {
                 echo 'Starting Docker Build & Push stage...'
                 script {
