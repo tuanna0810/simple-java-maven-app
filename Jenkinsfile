@@ -30,17 +30,14 @@ pipeline {
             }
         }
         stage('Docker Build & Push') {
-            agent {
-                label 'docker'
-            }
             steps {
                 echo 'Starting Docker Build & Push stage...'
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
-                        def image = docker.build("xebeto/app1:${env.BUILD_NUMBER}")
-                        image.push()
-                        image.push('latest')
-                    }
+                sh 'docker build -t xebeto/app1:${BUILD_NUMBER} .'
+                sh 'docker tag xebeto/app1:${BUILD_NUMBER} xebeto/app1:latest'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push xebeto/app1:${BUILD_NUMBER}'
+                    sh 'docker push xebeto/app1:latest'
                 }
                 echo 'Docker image pushed successfully'
             }
