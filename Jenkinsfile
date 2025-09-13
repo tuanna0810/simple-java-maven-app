@@ -22,8 +22,16 @@ pipeline {
                 }
             }
         }
+        stage('Deliver') { 
+            steps {
+                echo 'Starting Deliver stage...'
+                sh './jenkins/scripts/deliver.sh'
+                echo 'Delivery completed'
+            }
+        }
         stage('Docker Build & Push') {
             steps {
+                echo 'Starting Docker Build & Push stage...'
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
                         def image = docker.build("xebeto/app1:${env.BUILD_NUMBER}")
@@ -31,11 +39,7 @@ pipeline {
                         image.push('latest')
                     }
                 }
-            }
-        }
-        stage('Deliver') { 
-            steps {
-                sh './jenkins/scripts/deliver.sh' 
+                echo 'Docker image pushed successfully'
             }
         }
     }
